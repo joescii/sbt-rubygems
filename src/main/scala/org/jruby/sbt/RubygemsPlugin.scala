@@ -38,11 +38,13 @@ object RubygemsPlugin extends AutoPlugin {
 
   def jruby(rubyGemsHome: File): org.jruby.Main = {
     val ruby = new RubyInstanceConfig()
+//    ruby.setCextEnabled(true)
     val env = ruby.getEnvironment.asInstanceOf[java.util.Map[String,String]]
     val newEnv = new java.util.HashMap[String, String]
     newEnv.putAll(env)
     newEnv.put("GEM_HOME", rubyGemsHome.getAbsolutePath)
     newEnv.put("GEM_PATH", rubyGemsHome.getAbsolutePath)
+//    newEnv.put("JRUBY_OPTS","-Xcext.enabled=true")
     ruby.setEnvironment(newEnv)
     new org.jruby.Main(ruby)
   }
@@ -60,7 +62,7 @@ object RubygemsPlugin extends AutoPlugin {
           } else {
             log.debug("Installing " + f.getName)
             jruby(rubyGemsHome).run(
-              List("-S", "gem", "install", f.getAbsolutePath, "-f", "-l", "-i",
+              List("-Xcext.enabled=true", "-S", "gem", "install", f.getAbsolutePath, "-f", "-l", "-i",
                 rubyGemsHome.getAbsolutePath).toArray[String])
           }
         }
